@@ -68,7 +68,7 @@ public class Key {
         itemList.clear(); // 切换关卡时先清空之前的
 
         // 这里的路径对应 src/main/resources/images/ 目录下的文件
-        itemList.add(new Key(64, 64, 500, 400, "/com/paperanne/images/key_yellow.png"));
+        itemList.add(new Key(64, 64, 200, 200, "/com/paperanne/paperanne/images/key_yellow.png"));
 
         return itemList;
     }
@@ -78,11 +78,5 @@ public class Key {
      */
     public static List<Key> getItemList() {
         return itemList;
-    }
-    public double getX() {
-        return x;
-    }
-    public double getY() {
-        return y;
     }
 }

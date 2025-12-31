@@ -26,11 +26,4 @@ public class PlayerModel {
         // 假设 PlayerModel 存储了当前的 x, y 和 宽高
         return new HitBox((int) this.width, (int) this.height, this.x, this.y);
     }
-
-    public double getX() {
-        return x;
-    }
-    public double getY() {
-        return y;
-    }
 }

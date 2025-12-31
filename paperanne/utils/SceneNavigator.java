@@ -1,14 +1,12 @@
 package com.paperanne.utils; // 建议放在 utils 包下
 
-import com.paperanne.controller.GameController_Abstract;
-import com.paperanne.controller.Level4Controller;
+import com.paperanne.controller.GameController;
 import com.paperanne.view.GameView;
-import com.paperanne.view.Level4View;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import java.io.IOException;
+
+import java.awt.*;
 
 public class SceneNavigator {
 
@@ -16,7 +14,7 @@ public class SceneNavigator {
     public static void toMenu(Stage stage) {
         try {
             javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
-                    SceneNavigator.class.getResource("/com/paperanne/menu.fxml")
+                    SceneNavigator.class.getResource("/com/paperanne/paperanne/menu.fxml")
             );
 
             // 1. 加载新的布局
@@ -27,13 +25,14 @@ public class SceneNavigator {
             Scene menuScene = new Scene(root, 800, 600);
 
             // 3. 应用到 Stage
-            stage.setScene(menuScene);
-
-            // 4. 【关键步骤】强制 Stage 调整大小并居中
             stage.setWidth(800);
             stage.setHeight(600);
             stage.setResizable(false); // 通常游戏菜单不建议手动拉伸
-            stage.centerOnScreen();    // 让窗口回到屏幕中央
+            stage.centerOnScreen();
+            stage.setScene(menuScene);
+
+            // 4. 【关键步骤】强制 Stage 调整大小并居中
+                // 让窗口回到屏幕中央
 
             stage.show();
         } catch (Exception e) {
@@ -41,73 +40,48 @@ public class SceneNavigator {
             e.printStackTrace();
         }
     }
-/*
+
     // 重开/跳转到指定关卡
+//    public static void toGameLevel(Stage stage, int levelId) {
+//        try {
+//            // 假设你的游戏界面是 GameView.fxml
+//            FXMLLoader loader = new FXMLLoader(SceneNavigator.class.getResource("/view/GameView.fxml"));
+//            Parent root = loader.load();
+//
+//             //如果你的 GameView 对应的 Controller 需要传参，可以在这里获取 controller 设置
+//             GameController controller = loader.getController();
+//             controller.initLevel(levelId);
+//
+//            stage.setScene(new Scene(root));
+//            stage.show();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            System.err.println("错误：无法加载关卡 " + levelId);
+//        }
+
+
+
     public static void toGameLevel(Stage stage, int levelId) {
-        try {
-            // 假设你的游戏界面是 GameView.fxml
-            FXMLLoader loader = new FXMLLoader(SceneNavigator.class.getResource("/view/GameView.fxml"));
-            Parent root = loader.load();
+        // 1. 创建视图实例 (纯代码编写的 View)
+        GameView gameView = new GameView();
 
-            // 如果你的 GameView 对应的 Controller 需要传参，可以在这里获取 controller 设置
-            // GameController controller = loader.getController();
-            // controller.initLevel(levelId);
-
-            stage.setScene(new Scene(root));
-            stage.show();
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("错误：无法加载关卡 " + levelId);
-        }
-    }
-
-  */
-    /**
-     * 统一关卡跳转入口
-     * 修改点：添加了对 levelId == 4 的支持，并统一了 Scene 的创建逻辑
-     */
-    public static void toGameLevel(Stage stage, int levelId) {
-        GameView view;
-        // 1. 初始化为 null，防止“无法解析”或“未初始化”错误
-        GameController_Abstract controller = null;
-
-        if (levelId == 4) {
-            view = new Level4View();
-            // 2. 赋值给上面定义的变量
-            controller = new Level4Controller((Level4View) view);
-        } else {
-            view = new GameView();
-            // 如果有其他关卡的 Controller，可以在这里赋值
-            // if (levelId == 1) controller = new Level1Controller(view, 1);
+        // 2. 根据 levelId 创建对应的 Controller
+        // 假设你的 Controller 构造函数接收 View 和 levelId
+        // 这里以 Level1Controller 为例，或者你可以根据 ID switch 出不同的 Controller
+        if (levelId == 1) {
+            new GameController(gameView);
+        } else if (levelId == 2) {
+            // new Level2Controller(gameView, 2);
         }
 
-        Parent root = view.getRootPane();
-
-        // 强行解绑逻辑（保持不变）
-        if (root.getScene() != null) {
-            root.getScene().setRoot(new javafx.scene.layout.Pane());
-        }
-
-        if (stage.getScene() == null) {
-            stage.setScene(new Scene(root, 800, 540));
-        } else {
-            stage.getScene().setRoot(root);
-        }
-
-        // 3. 只有当 controller 不为空时，才执行监听绑定
-        if (controller != null) {
-            controller.setupInputListeners(stage.getScene());
-        }
-
+        // 3. 将 View 放入 Scene 并展示
+        // 注意：gameView 通常应该继承自 Parent（如 Pane, StackPane 等）
+        Panel panel = new Panel();
+        Scene gameScene = new Scene(gameView.getRootPane(), 800, 600);
+        stage.setScene(gameScene);
         stage.show();
-        root.requestFocus();
+
+        System.out.println("成功进入代码构建的关卡: " + levelId);
     }
 
-    /**
-     * 专门跳转到第四关的快捷方法
-     */
-    public static void toLevel4(Stage stage) {
-        // 直接调用上面的统一入口即可，保证逻辑复用
-        toGameLevel(stage, 4);
-    }
 }

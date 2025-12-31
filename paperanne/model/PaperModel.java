@@ -18,16 +18,13 @@ public class PaperModel {
         setHeight(h);
     }
 
-    public PaperModel() {
-        this(0, 0, 0, 0);
-    }
-    public PaperModel(double x, double y, double width, double height, String type) {
+    public PaperModel(double x, double y, double width, double height,double r, String type) {
         setX(x);
         setY(y);
         setWidth(width);
         setHeight(height);
         setType(type);
-        setRotation(0);
+        setRotation(r);
     }
 
     // Getter 和 Setter 方法
