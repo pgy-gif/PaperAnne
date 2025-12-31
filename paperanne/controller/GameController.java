@@ -49,8 +49,8 @@ public class GameController extends GameController_Abstract {
         }
     }
 
-    public GameController(GameView view) {
-        super(view);
+    public GameController(GameView view,int levelId) {
+        super(view, levelId);
         //this.view = view;
 
 //        // 初始化纸片控制器

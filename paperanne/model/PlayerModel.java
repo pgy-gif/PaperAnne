@@ -4,7 +4,7 @@ public class PlayerModel {
     public double x = 100, y = 300;
     public double velY = 0;
     public final double speed = 4;
-    public double jumpForce = -8;    //跳跃高度
+    public final double jumpForce = -8;    //跳跃高度
     public final double gravity = 0.6;
     public boolean isJumping = false;
     public int sizeState = 0; // 0: 正常, 1: 大, -1: 小
@@ -20,10 +20,17 @@ public class PlayerModel {
 
     // 受伤无敌时间（毫秒）
     public long lastDamageTime = 0;
-    public final long INVINCIBLE_DURATION = 1500; // 受伤后1.5s无敌
+    public final long INVINCIBLE_DURATION = 1500; // 受伤后1秒无敌
 
     public HitBox getHitBox() {
         // 假设 PlayerModel 存储了当前的 x, y 和 宽高
         return new HitBox((int) this.width, (int) this.height, this.x, this.y);
+    }
+
+    public double getX() {
+        return x;
+    }
+    public double getY() {
+        return y;
     }
 }

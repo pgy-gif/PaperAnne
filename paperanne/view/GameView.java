@@ -1,6 +1,7 @@
 package com.paperanne.view;
 
-import com.paperanne.model.PlayerModel;
+import com.paperanne.model.GameLever;
+import com.paperanne.model.Ladder;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -14,11 +15,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GameView {
-    private Pane root = new Pane();
+    protected Pane root = new Pane();
     private ImageView playerView;
     private List<ImageView> paperViews = new ArrayList<>();
     private Scene scene;
-    private ImageView keyUI; // 钥匙 UI
+    protected ImageView keyUI; // 钥匙 UI
     private Text interactTip; // 交互提示
     //蛋糕和药水
     private ImageView cakeView; // 蛋糕
@@ -34,10 +35,14 @@ public class GameView {
     private Image doorOpenImg;
 
     //拉杆
-    private ImageView leverView;
-    private Image leverLeftImg;
-    private Image leverRightImg;
+    protected ImageView leverView;
+    protected Image leverLeftImg;
+    protected Image leverRightImg;
+    protected List<GameLever> levers = new ArrayList<>();
 
+    //终点门
+    protected ImageView successDoorView;
+    protected Image successDoorImg;
 
     // 逻辑地面高度：角色脚底和纸片底部都在这个高度
     public final double GROUND_Y = 500;
@@ -48,10 +53,13 @@ public class GameView {
     private javafx.scene.text.Text healthText;
     private javafx.scene.text.Text gameOverText;
 
+    //梯子
+    private List<Ladder> ladders = new ArrayList<>();
+
     public GameView() {
         // 1. 添加背景图 (最底层)
         try {
-            Image backgroundImg = new Image(getClass().getResourceAsStream("/com/paperanne/paperanne/images/background.png"));
+            Image backgroundImg = new Image(getClass().getResourceAsStream("/com/paperanne/images/background.png"));
             ImageView bgView = new ImageView(backgroundImg);
             bgView.setFitWidth(SCENE_WIDTH);
             bgView.setFitHeight(SCENE_HEIGHT);
@@ -63,7 +71,7 @@ public class GameView {
 
         // 2.添加地面图片
         try {
-            Image groundImg = new Image(getClass().getResourceAsStream("/com/paperanne/paperanne/images/ground.png"));
+            Image groundImg = new Image(getClass().getResourceAsStream("/com/paperanne/images/ground.png"));
             ImageView groundView = new ImageView(groundImg);
 
             // 设置位置：图片的上边缘 = 逻辑地面高度
@@ -88,9 +96,9 @@ public class GameView {
             root.getChildren().add(groundRect);
         }
         // ------------------------------------------
-
+/*
         // 3. 初始化纸片 (上层)
-        Image pImg = new Image(getClass().getResourceAsStream("/com/paperanne/paperanne/images/paper_red.png"));
+        Image pImg = new Image(getClass().getResourceAsStream("/com/paperanne/images/paper_red.png"));
         // 注意：这里的 Y=450，纸片高度=50，所以纸片底部 = 450+50 = 500 (GROUND_Y)，正好接在地面图片上方
         double[][] positions = {{200, 450, 150, 50}, {450, 450, 100, 50}, {100, 450, 80, 50}};
         for (double[] p : positions) {
@@ -102,9 +110,9 @@ public class GameView {
             paperViews.add(pv);
             root.getChildren().add(pv);
         }
-
+*/
         // 4. 初始化角色 (最上层)
-        playerView = new ImageView(new Image(getClass().getResourceAsStream("/com/paperanne/paperanne/images/player.png")));
+        playerView = new ImageView(new Image(getClass().getResourceAsStream("/com/paperanne/images/player.png")));
         playerView.setFitWidth(40);
         playerView.setFitHeight(60);
         root.getChildren().add(playerView);
@@ -112,7 +120,7 @@ public class GameView {
         scene = new Scene(root, SCENE_WIDTH, SCENE_HEIGHT);
 
         try {
-            Image keyImage = new Image(getClass().getResourceAsStream("/com/paperanne/paperanne/images/key_yellow.png"));
+            Image keyImage = new Image(getClass().getResourceAsStream("/com/paperanne/images/key_yellow.png"));
             keyUI = new ImageView(keyImage);
             keyUI.setFitWidth(40);
             keyUI.setFitHeight(40);
@@ -128,10 +136,10 @@ public class GameView {
         } catch (Exception e) {
             System.out.println("UI钥匙图标加载失败");
         }
-
+/*
         // 添加蛋糕
         try {
-            Image cakeImg = new Image(getClass().getResourceAsStream("/com/paperanne/paperanne/images/cake.png"));
+            Image cakeImg = new Image(getClass().getResourceAsStream("/com/paperanne/images/cake.png"));
             cakeView = new ImageView(cakeImg);
             cakeView.setFitWidth(20);  // 角色宽度的一半 (40/2)
             cakeView.setFitHeight(30); // 角色高度的一半 (60/2)
@@ -144,7 +152,7 @@ public class GameView {
 
         // 添加药水
         try {
-            Image potionImg = new Image(getClass().getResourceAsStream("/com/paperanne/paperanne/images/potion.png"));
+            Image potionImg = new Image(getClass().getResourceAsStream("/com/paperanne/images/potion.png"));
             potionView = new ImageView(potionImg);
             potionView.setFitWidth(20);  // 角色宽度的一半
             potionView.setFitHeight(30); // 角色高度的一半
@@ -157,7 +165,7 @@ public class GameView {
 
         //添加传送门
         try {
-            Image portalImg = new Image(getClass().getResourceAsStream("/com/paperanne/paperanne/images/portal.png"));
+            Image portalImg = new Image(getClass().getResourceAsStream("/com/paperanne/images/portal.png"));
             portalA = new ImageView(portalImg);
             portalA.setFitWidth(50);
             portalA.setFitHeight(80);
@@ -174,7 +182,7 @@ public class GameView {
         } catch (Exception e) {
             System.out.println("传送门图片加载失败");
         }
-
+*/
         // --- 初始化 UI：生命值 ---
         healthText = new javafx.scene.text.Text("HP: ❤❤❤❤❤");
         healthText.setStyle("-fx-font-size: 24; -fx-fill: red; -fx-font-weight: bold;");
@@ -189,11 +197,11 @@ public class GameView {
         gameOverText.setY(SCENE_HEIGHT / 2);
         gameOverText.setVisible(false); // 默认隐藏
         root.getChildren().add(gameOverText);
-
+/*
         // 添加门
         try {
-            doorClosedImg = new Image(getClass().getResourceAsStream("/com/paperanne/paperanne/images/door_closed.png"));
-            doorOpenImg = new Image(getClass().getResourceAsStream("/com/paperanne/paperanne/images/door_open.png"));
+            doorClosedImg = new Image(getClass().getResourceAsStream("/com/paperanne/images/door_closed.png"));
+            doorOpenImg = new Image(getClass().getResourceAsStream("/com/paperanne/images/door_open.png"));
 
             doorView = new ImageView(doorClosedImg);
             doorView.setFitWidth(60);
@@ -208,8 +216,8 @@ public class GameView {
 
         //添加拉杆
         try {
-            leverLeftImg = new Image(getClass().getResourceAsStream("/com/paperanne/paperanne/images/lever_left.png"));
-            leverRightImg = new Image(getClass().getResourceAsStream("/com/paperanne/paperanne/images/lever_right.png"));
+            leverLeftImg = new Image(getClass().getResourceAsStream("/com/paperanne/images/lever_left.png"));
+            leverRightImg = new Image(getClass().getResourceAsStream("/com/paperanne/images/lever_right.png"));
 
             leverView = new ImageView(leverLeftImg);
             leverView.setFitWidth(40);
@@ -222,6 +230,19 @@ public class GameView {
             System.out.println("拉杆图片加载失败");
         }
 
+        try {
+            successDoorImg = new Image(getClass().getResourceAsStream("/com/paperanne/images/successDoor.png"));
+            successDoorView = new ImageView(successDoorImg);
+            successDoorView.setFitWidth(60);
+            successDoorView.setFitHeight(80);
+            successDoorView.setX(700);
+            successDoorView.setY(GROUND_Y - 80);
+
+            root.getChildren().add(successDoorView);
+        } catch (Exception e) {
+            System.err.println("终点门图片加载失败");
+        }
+*/
         // 无论之前添加了什么，把玩家提到最前面
         if (playerView != null) {
             playerView.toFront();
@@ -235,6 +256,8 @@ public class GameView {
         interactTip.setStyle("-fx-font-size: 16; -fx-fill: white; -fx-font-weight: bold;");
         interactTip.setVisible(false); // 默认隐藏
         root.getChildren().add(interactTip);
+
+
     }
 
     public Scene getScene() {
@@ -309,4 +332,22 @@ public class GameView {
         if (view != null) root.getChildren().add(view);
     }
 
+    public ImageView getSuccessDoorView() {
+        return successDoorView;
+    }
+
+    public List<Ladder> getLadders() {
+        return ladders; // 默认返回空列表
+    }
+
+    public void setPortalA(ImageView portalA) {
+        this.portalA = portalA;
+    }
+    public void setPortalB(ImageView portalB) {
+        this.portalB = portalB;
+    }
+
+    public List<GameLever> getLevers() {
+        return levers;
+    }
 }
